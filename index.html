@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git-Good: Commit Message Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #374151;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #6b7280;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans min-h-screen">
+    <!-- Bolt.new Badge -->
+    <a href="https://bolt.new/" target="_blank" rel="noopener noreferrer" class="fixed top-20 right-4 z-50 transition-all duration-300 hover:scale-110 hover:opacity-90">
+        <div class="bg-white rounded-full p-2 shadow-lg flex items-center space-x-2 text-black font-medium text-sm">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" fill="currentColor"/>
+            </svg>
+            <span class="hidden sm:inline">Built with Bolt.new</span>
+        </div>
+    </a>
+
+    <!-- Header -->
+    <header class="border-b border-gray-700 bg-gray-800/50 backdrop-blur-sm sticky top-0 z-10">
+        <h1 class="text-4xl font-bold text-center py-6 text-emerald-400">
+            Git-Good: Commit Message Generator
+        </h1>
+        <p class="text-center text-gray-400 pb-4 px-4">
+            Generate perfect conventional commit messages with ease
+        </p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Left Column: Form Inputs -->
+            <div class="space-y-6">
+                <!-- Commit Type -->
+                <div class="mb-4">
+                    <label for="commit-type" class="block text-sm font-medium text-gray-300 mb-2">
+                        Commit Type
+                    </label>
+                    <select id="commit-type" class="bg-gray-800 border border-gray-600 text-white rounded-md p-3 w-full focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all duration-200">
+                        <option value="feat">feat</option>
+                        <option value="fix">fix</option>
+                        <option value="docs">docs</option>
+                        <option value="style">style</option>
+                        <option value="refactor">refactor</option>
+                        <option value="perf">perf</option>
+                        <option value="test">test</option>
+                        <option value="build">build</option>
+                        <option value="chore">chore</option>
+                    </select>
+                    <div id="type-explanation" class="text-sm text-gray-400 mt-2 p-2 bg-gray-800/50 rounded border-l-4 border-emerald-500">
+                        A new feature
+                    </div>
+                </div>
+
+                <!-- Scope -->
+                <div class="mb-4">
+                    <label for="commit-scope" class="block text-sm font-medium text-gray-300 mb-2">
+                        Scope (Optional)
+                    </label>
+                    <input type="text" id="commit-scope" placeholder="e.g., api, auth, ui" class="bg-gray-800 border border-gray-600 text-white rounded-md p-3 w-full focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all duration-200">
+                    <p class="text-xs text-gray-500 mt-1">The area of the codebase affected by this commit</p>
+                </div>
+
+                <!-- Emoji Picker -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                        Select an Emoji (Optional)
+                    </label>
+                    <div id="emoji-picker" class="grid grid-cols-9 gap-2">
+                        <button type="button" data-emoji="✨" class="emoji-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-3 text-2xl transition-all duration-200 hover:scale-110">✨</button>
+                        <button type="button" data-emoji="🐛" class="emoji-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-3 text-2xl transition-all duration-200 hover:scale-110">🐛</button>
+                        <button type="button" data-emoji="📚" class="emoji-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-3 text-2xl transition-all duration-200 hover:scale-110">📚</button>
+                        <button type="button" data-emoji="🎨" class="emoji-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-3 text-2xl transition-all duration-200 hover:scale-110">🎨</button>
+                        <button type="button" data-emoji="♻️" class="emoji-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-3 text-2xl transition-all duration-200 hover:scale-110">♻️</button>
+                        <button type="button" data-emoji="⚡️" class="emoji-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-3 text-2xl transition-all duration-200 hover:scale-110">⚡️</button>
+                        <button type="button" data-emoji="🧪" class="emoji-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-3 text-2xl transition-all duration-200 hover:scale-110">🧪</button>
+                        <button type="button" data-emoji="🏗️" class="emoji-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-3 text-2xl transition-all duration-200 hover:scale-110">🏗️</button>
+                        <button type="button" data-emoji="🧹" class="emoji-btn bg-gray-700 hover:bg-gray-600 rounded-lg p-3 text-2xl transition-all duration-200 hover:scale-110">🧹</button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Click an emoji to add visual context to your commit</p>
+                </div>
+
+                <!-- Subject Line -->
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="commit-subject" class="block text-sm font-medium text-gray-300">
+                            Subject
+                        </label>
+                        <span id="subject-counter" class="text-sm text-gray-400">0/50</span>
+                    </div>
+                    <input type="text" id="commit-subject" placeholder="A short, imperative summary" class="bg-gray-800 border border-gray-600 text-white rounded-md p-3 w-full focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all duration-200">
+                    <p class="text-xs text-gray-500 mt-1">Use imperative mood: "add feature" not "added feature"</p>
+                </div>
+
+                <!-- Body -->
+                <div class="mb-4">
+                    <label for="commit-body" class="block text-sm font-medium text-gray-300 mb-2">
+                        Body (Optional)
+                    </label>
+                    <textarea id="commit-body" rows="4" placeholder="Explain what and why vs. how..." class="bg-gray-800 border border-gray-600 text-white rounded-md p-3 w-full focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all duration-200 resize-vertical"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Provide additional context about the change</p>
+                </div>
+
+                <!-- Footer -->
+                <div class="mb-4">
+                    <label for="commit-footer" class="block text-sm font-medium text-gray-300 mb-2">
+                        Footer (Optional, for Breaking Changes/Issues)
+                    </label>
+                    <textarea id="commit-footer" rows="2" placeholder="BREAKING CHANGE: ... or Closes #123" class="bg-gray-800 border border-gray-600 text-white rounded-md p-3 w-full focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all duration-200 resize-vertical"></textarea>
+                    <p class="text-xs text-gray-500 mt-1">Include breaking changes or reference issues</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Live Preview -->
+            <div class="lg:sticky lg:top-24 lg:self-start">
+                <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl border border-gray-700 p-6">
+                    <h2 class="text-2xl font-bold text-emerald-400 mb-4 flex items-center">
+                        <span class="mr-2">📝</span>
+                        Live Preview
+                    </h2>
+                    
+                    <div class="mb-4">
+                        <pre class="bg-gray-950 border border-gray-700 rounded-lg p-4 min-h-[200px] font-mono text-sm overflow-x-auto"><code id="preview-output" class="text-gray-300">Start typing to see your commit message...</code></pre>
+                    </div>
+
+                    <button id="copy-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2">
+                        <span class="text-lg">📋</span>
+                        <span>Copy Message</span>
+                    </button>
+
+                    <!-- Quick Tips -->
+                    <div class="mt-6 p-4 bg-gray-900/50 rounded-lg border border-gray-600">
+                        <h3 class="text-sm font-semibold text-emerald-400 mb-2">💡 Quick Tips</h3>
+                        <ul class="text-xs text-gray-400 space-y-1">
+                            <li>• Keep subject under 50 characters</li>
+                            <li>• Use imperative mood in subject</li>
+                            <li>• Separate subject from body with blank line</li>
+                            <li>• Reference issues in footer (e.g., "Closes #123")</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-700 bg-gray-800/30 mt-16 py-8">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p class="mb-2">Built with ❤️ for better git commits</p>
+            <p class="text-sm">Following the <a href="https://conventionalcommits.org/" target="_blank" class="text-emerald-400 hover:text-emerald-300 underline">Conventional Commits</a> specification</p>
+        </div>
+    </footer>
+
+    <script>
+        // State variables
+        let selectedEmoji = '';
+        
+        // Type explanations mapping
+        const typeExplanations = {
+            feat: 'A new feature',
+            fix: 'A bug fix',
+            docs: 'Documentation only changes',
+            style: 'Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)',
+            refactor: 'A code change that neither fixes a bug nor adds a feature',
+            perf: 'A code change that improves performance',
+            test: 'Adding missing tests or correcting existing tests',
+            build: 'Changes that affect the build system or external dependencies',
+            chore: 'Other changes that don\'t modify src or test files'
+        };
+
+        // DOM elements
+        const commitType = document.getElementById('commit-type');
+        const commitScope = document.getElementById('commit-scope');
+        const commitSubject = document.getElementById('commit-subject');
+        const commitBody = document.getElementById('commit-body');
+        const commitFooter = document.getElementById('commit-footer');
+        const previewOutput = document.getElementById('preview-output');
+        const subjectCounter = document.getElementById('subject-counter');
+        const typeExplanation = document.getElementById('type-explanation');
+        const copyBtn = document.getElementById('copy-btn');
+        const emojiPicker = document.getElementById('emoji-picker');
+
+        // Update preview function
+        function updatePreview() {
+            const type = commitType.value;
+            const scope = commitScope.value.trim();
+            const subject = commitSubject.value.trim();
+            const body = commitBody.value.trim();
+            const footer = commitFooter.value.trim();
+
+            // Build commit message
+            let message = type;
+            
+            if (scope) {
+                message += `(${scope})`;
+            }
+            
+            message += ':';
+            
+            if (selectedEmoji) {
+                message += ` ${selectedEmoji}`;
+            }
+            
+            if (subject) {
+                message += ` ${subject}`;
+            }
+
+            if (body) {
+                message += `\n\n${body}`;
+            }
+
+            if (footer) {
+                message += `\n\n${footer}`;
+            }
+
+            // Update preview
+            previewOutput.textContent = message || 'Start typing to see your commit message...';
+
+            // Update subject counter
+            const subjectLength = subject.length;
+            subjectCounter.textContent = `${subjectLength}/50`;
+            
+            if (subjectLength > 50) {
+                subjectCounter.className = 'text-sm text-red-500 font-medium';
+            } else {
+                subjectCounter.className = 'text-sm text-gray-400';
+            }
+        }
+
+        // Update type explanation
+        function updateTypeExplanation() {
+            const type = commitType.value;
+            typeExplanation.textContent = typeExplanations[type];
+            
+            // Save to localStorage
+            localStorage.setItem('gitGoodLastType', type);
+        }
+
+        // Handle emoji selection
+        function handleEmojiClick(event) {
+            if (event.target.classList.contains('emoji-btn')) {
+                const clickedEmoji = event.target.dataset.emoji;
+                
+                // Remove selected state from all buttons
+                document.querySelectorAll('.emoji-btn').forEach(btn => {
+                    btn.classList.remove('ring-2', 'ring-emerald-500');
+                });
+
+                // Toggle selection
+                if (selectedEmoji === clickedEmoji) {
+                    selectedEmoji = '';
+                } else {
+                    selectedEmoji = clickedEmoji;
+                    event.target.classList.add('ring-2', 'ring-emerald-500');
+                }
+
+                updatePreview();
+            }
+        }
+
+        // Copy to clipboard
+        async function copyToClipboard() {
+            try {
+                const text = previewOutput.textContent;
+                if (text === 'Start typing to see your commit message...') {
+                    return;
+                }
+
+                await navigator.clipboard.writeText(text);
+                
+                // Update button temporarily
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<span class="text-lg">✅</span><span>Copied!</span>';
+                copyBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+                copyBtn.classList.add('bg-green-600');
+
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.remove('bg-green-600');
+                    copyBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                
+                // Fallback notification
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<span class="text-lg">❌</span><span>Failed to copy</span>';
+                copyBtn.classList.add('bg-red-600');
+
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.classList.remove('bg-red-600');
+                }, 2000);
+            }
+        }
+
+        // Event listeners
+        commitType.addEventListener('change', () => {
+            updateTypeExplanation();
+            updatePreview();
+        });
+
+        [commitScope, commitSubject, commitBody, commitFooter].forEach(element => {
+            element.addEventListener('input', updatePreview);
+        });
+
+        emojiPicker.addEventListener('click', handleEmojiClick);
+        copyBtn.addEventListener('click', copyToClipboard);
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved type from localStorage
+            const savedType = localStorage.getItem('gitGoodLastType');
+            if (savedType && typeExplanations[savedType]) {
+                commitType.value = savedType;
+            }
+            
+            updateTypeExplanation();
+            updatePreview();
+
+            // Add some initial animation
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (event) => {
+            // Ctrl+Enter or Cmd+Enter to copy
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                event.preventDefault();
+                copyToClipboard();
+            }
+        });
+    </script>
+</body>
+</html>
